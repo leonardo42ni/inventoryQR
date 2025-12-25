@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - Quản lý thiết bị</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>HỆ THỐNG QUẢN LÝ THIẾT BỊ</h1>
+    
+    <!-- Nút chuyển đổi giữa Đăng nhập và Đăng ký -->
+    <div class="toggle-buttons">
+        <button id="showLoginBtn" class="active">Đăng nhập</button>
+        <button id="showRegisterBtn">Đăng ký</button>
+    </div>
+
+    <!-- FORM ĐĂNG NHẬP -->
+    <div id="loginForm" class="form-container">
+        <h3>Đăng nhập</h3>
+        <label for="loginUsername">Tên đăng nhập:</label>
+        <input type="text" id="loginUsername" placeholder="Nhập username">
+        
+        <label for="loginPassword">Mật khẩu:</label>
+        <input type="password" id="loginPassword" placeholder="Nhập password">
+        
+        <button id="loginButton">Đăng nhập</button>
+    </div>
+
+    <!-- FORM ĐĂNG KÝ -->
+    <div id="registerForm" class="form-container hidden">
+        <h3>Đăng ký tài khoản</h3>
+        <label for="registerUsername">Tên đăng nhập:</label>
+        <input type="text" id="registerUsername" placeholder="Nhập username">
+        
+        <label for="registerPassword">Mật khẩu:</label>
+        <input type="password" id="registerPassword" placeholder="Nhập password">
+        
+        <label for="registerEmail">Email (tùy chọn):</label>
+        <input type="email" id="registerEmail" placeholder="Nhập email">
+        
+        <label for="registerFullname">Họ tên (tùy chọn):</label>
+        <input type="text" id="registerFullname" placeholder="Nhập họ tên">
+        
+        <button id="registerButton">Đăng ký</button>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>

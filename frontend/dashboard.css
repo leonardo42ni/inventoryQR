@@ -1,0 +1,402 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap');
+
+:root{
+  --primary-color: #3bb77e; /* Màu xanh chủ đạo */
+  --secondary :#ffba43;     /* Màu vàng nhấn */
+  --bg: #e2f9ee;
+  --black: #1c2137;
+  --white: #fff;
+  --box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+*{
+  font-family: 'Roboto', sans-serif;
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+  outline: none; border: none;
+  text-decoration: none;
+  text-transform: capitalize;
+  transition: .2s linear;
+}
+
+html{
+  font-size: 62.5%;
+  overflow-x: hidden;
+  scroll-padding-top: 9rem;
+  scroll-behavior: smooth;
+}
+
+section{
+  padding: 2rem 7%;
+}
+
+/* Nút bấm chung */
+.btn{
+  margin-top: 1rem;
+  display: inline-block;
+  padding: 1.3rem 3.5rem;
+  font-size: 1.7rem;
+  color: var(--white);
+  border-radius: .5rem;
+  background: var(--primary-color);
+  cursor: pointer;
+}
+
+.btn:hover{
+  background: var(--secondary);
+  box-shadow: var(--box-shadow);
+}
+
+/* --- HEADER STYLE --- */
+.header{
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: var(--white);
+  box-shadow: var(--box-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 9%;
+}
+
+.header .logo{
+  font-size: 2.5rem;
+  font-weight: bolder;
+  color: var(--black);
+}
+
+.header .logo i{
+  color: var(--primary-color);
+  padding-right: .5rem;
+}
+
+.header .navbar a{
+  font-size: 1.7rem;
+  color: var(--black);
+  margin: 0 1rem;
+}
+
+.header .navbar a:hover{
+  color: var(--primary-color);
+}
+
+.header .icons div{
+  font-size: 2.5rem;
+  margin-left: 1.7rem;
+  cursor: pointer;
+  color: var(--black);
+}
+
+.header .icons div:hover{
+  color: var(--primary-color);
+}
+
+#menu-btn {
+  display: none;
+}
+
+/* --- BANNER / HOME STYLE --- */
+.home{
+  min-height: 100vh;
+  background: url('image/banner.png') no-repeat;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Lớp phủ đen mờ lên ảnh nền cho dễ đọc chữ */
+.home::before{
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 0;
+}
+
+.home .content{
+  max-width: 60rem;
+  text-align: center;
+  position: relative; /* Để nổi lên trên lớp phủ */
+  z-index: 1;
+}
+
+.home .content h3{
+  font-size: 6rem;
+  color: var(--white);
+  text-transform: uppercase;
+  padding-bottom: 1.5rem;
+}
+
+.home .content h3 span{
+  color: var(--primary-color);
+}
+
+.home .content p {
+    font-size: 1.6rem;
+    color: #eee;
+    line-height: 1.8;
+    padding: 1rem 0;
+    text-transform: none; /* Cho phép chữ thường */
+}
+
+/* --- RESPONSIVE MOBILE --- */
+@media (max-width: 991px){
+  html{ font-size: 55%; }
+  .header{ padding: 2rem; }
+}
+
+@media (max-width: 768px){
+  #menu-btn{ display: inline-block; }
+
+  .header .navbar{
+    position: absolute;
+    top: 115%; right: -110%;
+    background: var(--white);
+    box-shadow: var(--box-shadow);
+    border-radius: .5rem;
+    width: 30rem;
+  }
+
+  .header .navbar.active{
+    right: 2rem;
+  }
+
+  .header .navbar a{
+    display: block;
+    font-size: 2rem;
+    margin: 2rem;
+  }
+}
+/* CSS bổ sung cho phần Upload QR */
+.contact .row .image:hover {
+    background: #f0fff0 !important; /* Đổi màu nền nhẹ khi di chuột vào */
+    transition: 0.3s;
+}
+
+/* Chỉnh lại date input cho đẹp */
+input[type="date"] {
+    padding: 1rem;
+    font-size: 1.6rem;
+    color: #444;
+    background: var(--bg);
+    border-radius: .5rem;
+    border: .1rem solid transparent;
+}
+/* CSS cho thẻ Lịch sử (History Card) */
+.history-card {
+    display: flex;
+    align-items: center;
+    background: var(--white);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: .1rem solid rgba(0,0,0,0.1);
+    border-radius: .5rem;
+    box-shadow: var(--box-shadow);
+}
+
+/* Ảnh thiết bị nhỏ bên trái */
+.history-card img {
+    height: 8rem;
+    width: 10rem;
+    object-fit: cover;
+    border-radius: .5rem;
+    margin-right: 2rem;
+}
+
+/* Thông tin giữa */
+.history-card .info {
+    flex: 1; /* Chiếm hết khoảng trống ở giữa */
+}
+
+.history-card .info h3 {
+    font-size: 1.8rem;
+    color: var(--black);
+    margin-bottom: .5rem;
+}
+
+.history-card .info p {
+    font-size: 1.4rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* Badge trạng thái (Góc phải) */
+.status-badge {
+    padding: .8rem 1.5rem;
+    font-size: 1.4rem;
+    border-radius: 2rem;
+    font-weight: bold;
+    min-width: 100px;
+    text-align: center;
+}
+
+/* Màu sắc cho từng trạng thái */
+.status-pending { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; } /* Vàng */
+.status-approved { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; } /* Xanh lá */
+.status-rejected { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; } /* Đỏ */
+.status-returned { background: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; } /* Xám */
+
+
+/* CSS cho thẻ Thiết bị (Equipment Card) */
+.product .box-container .box {
+    text-align: center;
+    background: #fff;
+    border: .1rem solid rgba(0,0,0,0.1);
+    border-radius: .5rem;
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,0.1);
+    padding: 2rem;
+    position: relative;
+    transition: .2s linear;
+}
+
+.product .box-container .box:hover {
+    transform: translateY(-5px); /* Hiệu ứng nổi lên khi di chuột */
+}
+
+/* Ảnh thiết bị chính */
+.product .box-container .box .image img {
+    height: 15rem; /* Cố định chiều cao cho đều */
+    width: 100%;
+    object-fit: contain; /* Giữ tỷ lệ ảnh không bị méo */
+    margin-bottom: 1rem;
+}
+
+/* Tên thiết bị */
+.product .box-container .box h3 {
+    font-size: 2rem;
+    color: var(--black);
+    margin-bottom: 1rem;
+}
+
+/* Khu vực mã QR */
+.qr-area {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: .5rem;
+    margin: 1rem 0;
+    display: inline-block;
+    border: 1px dashed #ccc;
+}
+
+.qr-area img {
+    width: 80px;
+    height: 80px;
+}
+
+.qr-area p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-top: .5rem;
+}
+
+/* Trạng thái (Badge) */
+.status-tag {
+    position: absolute;
+    top: 1rem; left: 1rem;
+    padding: .5rem 1rem;
+    font-size: 1.4rem;
+    font-weight: bold;
+    border-radius: .5rem;
+    color: #fff;
+}
+
+.status-available { background: var(--primary-color); }
+.status-in_use { background: #dc3545; } /* Màu đỏ */
+
+
+/* CSS cho thẻ Thiết bị (Equipment Card) */
+.product .box-container .box {
+    text-align: center;
+    background: #fff;
+    border: .1rem solid rgba(0,0,0,0.1);
+    border-radius: .5rem;
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,0.1);
+    padding: 2rem;
+    position: relative;
+    transition: .2s linear;
+}
+.product .box-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+    gap: 1.5rem;
+}
+.product .box-container .box:hover {
+    transform: translateY(-5px); /* Hiệu ứng nổi lên khi di chuột */
+}
+
+/* Ảnh thiết bị chính */
+.product .box-container .box .image img {
+    height: 15rem; /* Cố định chiều cao cho đều */
+    width: 100%;
+    object-fit: contain; /* Giữ tỷ lệ ảnh không bị méo */
+    margin-bottom: 1rem;
+}
+
+/* Tên thiết bị */
+.product .box-container .box h3 {
+    font-size: 2rem;
+    color: var(--black);
+    margin-bottom: 1rem;
+}
+
+/* Khu vực mã QR */
+.qr-area {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: .5rem;
+    margin: 1rem 0;
+    display: inline-block;
+    border: 1px dashed #ccc;
+}
+
+.qr-area img {
+    width: 80px;
+    height: 80px;
+}
+
+.qr-area p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-top: .5rem;
+}
+
+/* Trạng thái (Badge) */
+.status-tag {
+    position: absolute;
+    top: 1rem; left: 1rem;
+    padding: .5rem 1rem;
+    font-size: 1.4rem;
+    font-weight: bold;
+    border-radius: .5rem;
+    color: #fff;
+}
+
+.status-available { background: var(--primary-color); }
+.status-in_use { background: #dc3545; } /* Màu đỏ */
+/* ... existing code ... */
+
+/* --- CSS MỚI CHO ẢNH PREVIEW QR --- */
+#qr-preview {
+    /* Giới hạn chiều ngang: chỉ chiếm 90% khung chứa để không bị sát lề */
+    max-width: 90%;
+    
+    /* GIỚI HẠN CHIỀU CAO QUAN TRỌNG NHẤT */
+    /* Bro có thể tăng giảm số 250px này tùy ý thích */
+    max-height: 250px; 
+    
+    /* Đảm bảo ảnh không bị méo khi bị ép kích thước */
+    object-fit: contain;
+    
+    /* Căn giữa ảnh trong khung */
+    margin: 1rem auto;
+    display: block; /* Để margin auto hoạt động */
+    
+    /* Trang trí thêm tí cho đẹp (tùy chọn) */
+    border-radius: .5rem;
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,0.1);
+}

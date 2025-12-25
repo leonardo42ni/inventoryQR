@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Quản trị hệ thống</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css">
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || user.role !== 'admin') {
+            alert('Bạn không có quyền truy cập trang này!');
+            window.location.href = '/index.html'; 
+        }
+    </script>
+
+    <style>
+        /* CSS bổ sung cho bảng quản lý*/ 
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 2rem; background: #fff; border-radius: .5rem; overflow: hidden; }
+        .admin-table th, .admin-table td { padding: 1.5rem; text-align: left; font-size: 1.4rem; border-bottom: 1px solid #eee; }
+        .admin-table th { background: var(--primary-color); color: #fff; }
+        .status-badge { padding: .5rem 1rem; border-radius: .5rem; font-weight: bold; font-size: 1.2rem; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-approved { background: #d4edda; color: #155724; }
+        .status-returned { background: #cce5ff; color: #383d41; }
+        .btn-action { padding: .5rem 1rem; border: none; border-radius: .5rem; cursor: pointer; color: #fff; margin-right: .5rem; }
+        .btn-approve { background: #28a745; }
+        .btn-reject { background: #dc3545; }
+        .btn-return { background: #007bff; }
+    </style>
+
+</head>
+<body>
+
+    <header class="header">
+        <a href="#" class="logo"> <i class="fas fa-user-shield"></i> QR Admin </a>
+        <nav class="navbar">
+            <a href="#home">Trang chủ</a>
+            <a href="#product">Thiết bị</a>
+            <a href="#admin-request">Quản lý đơn</a>
+        </nav>
+        <div class="icons">
+            <div id="logout-btn" class="fas fa-sign-out-alt" onclick="logout()" title="Đăng xuất"></div>
+            <div id="menu-btn" class="fas fa-bars"></div>
+        </div>
+    </header>
+
+    <section class="home" id="home">
+        <div class="content">
+            <h3>Hệ thống <span>Quản trị</span> thiết bị</h3>
+            <p>Dành riêng cho người quản lý: Duyệt yêu cầu và theo dõi kho hàng.</p>
+        </div>
+    </section>
+
+    <section class="product" id="product">
+        <h1 class="heading"> TÌNH TRẠNG <span> KHO HÀNG </span> </h1>
+        <div class="box-container" id="equipment-list">
+            </div>
+    </section>
+
+    <section class="contact" id="admin-request">
+        <h1 class="heading"> PHÊ DUYỆT <span> YÊU CẦU </span> </h1>
+        <div class="row">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Người mượn/Số điện thoại</th> 
+                        <th>Thiết bị</th>
+                        <th>Ngày mượn/trả dự kiến</th>                       
+                        <th>Ghi chú</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="request-tbody">
+                    </tbody>
+            </table>
+        </div>
+    </section>
+
+    <script>
+        // --- 1. Load danh sách thiết bị (Phần 2) ---
+        async function loadEquipment() {
+    const res = await fetch('/api/equipment');
+    const data = await res.json();
+    const container = document.getElementById('equipment-list');
+
+    container.innerHTML = data.map(item => `
+        <div class="box">
+            <style>
+                .box img {
+                    width: 100%;
+                    height: 200px;
+                    object-fit: cover;
+                    border-radius: .5rem;
+                }
+            </style>
+            <img src="${item.image_url}" alt="" onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+            <h3>${item.name}</h3>
+            <div class="price">Trạng thái: ${item.status === 'available' ? 'Sẵn sàng' : 'Đang sử dụng'}</div>
+            <p style="font-size: 1.2rem; color: #666; margin-top: 1rem;">Mã thiết bị: ${item.id}</p>
+        </div>
+    `).join('');
+}
+        // --- 2. Load danh sách đơn mượn (Phần 3) ---
+        // --- Cập nhật hàm load danh sách đơn mượn ---
+async function loadRequests() {
+    const res = await fetch('/api/admin/requests');
+    const data = await res.json();
+    const tbody = document.getElementById('request-tbody');
+    
+    tbody.innerHTML = data.map(req => `
+        <tr>
+            <td><b>${req.username}</b></td>
+            <td>${req.device_name}</td>
+            <td>${new Date(req.borrow_date).toLocaleDateString('vi-VN')}</td>
+            <td>
+                <span class="status-badge ${req.status}">${req.status.toUpperCase()}</span>
+            </td>
+            <td>
+                ${req.status === 'pending' ? `
+                    <button class="btn-action btn-approve" onclick="updateStatus(${req.id}, 'approve', ${req.equipment_id})">Duyệt</button>
+                    <button class="btn-action btn-reject" onclick="updateStatus(${req.id}, 'reject', ${req.equipment_id})">Từ chối</button>
+                ` : ''}
+                ${req.status === 'approved' ? `
+                    <button class="btn-action btn-return" onclick="updateStatus(${req.id}, 'return', ${req.equipment_id})">Xác nhận trả máy</button>
+                ` : ''}
+            </td>
+        </tr>
+    `).join('');
+}
+
+        // --- 3. Gửi lệnh cập nhật lên Backend (Kết nối với admin.js) ---
+        async function updateStatus(id, action, equipment_id) {
+            if(!confirm(`Bạn chắc chắn muốn thực hiện hành động: ${action}?`)) return;
+
+            const res = await fetch('/api/admin/update', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, action, equipment_id })
+            });
+
+            const result = await res.json();
+            alert(result.message);
+            loadRequests(); // Load lại bảng đơn mượn
+            loadEquipment(); // Load lại trạng thái kho
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        // Khởi chạy khi load trang
+        window.onload = () => {
+            loadEquipment();
+            loadRequests();
+        };
+
+        // Menu mobile logic
+        let menu = document.querySelector('#menu-btn');
+        let navbar = document.querySelector('.navbar');
+        menu.onclick = () => {
+            menu.classList.toggle('fa-times');
+            navbar.classList.toggle('active');
+        }
+    </script>
+    <script src="admin_script.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Hệ thống thiết bị</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+    <header class="header">
+        <a href="#" class="logo"> <i class="fas fa-box-open"></i> QR Inventory </a>
+
+        <nav class="navbar">
+            <a href="#home">Trang chủ</a>
+            <a href="#product">Thiết bị</a>
+            <a href="#form">Điền Form</a>
+            <a href="#history">Lịch sử</a>
+        </nav>
+
+        <div class="icons">
+            <div id="qr-btn" class="fas fa-qrcode" title="Quét/Upload QR"></div>
+            
+            <div id="logout-btn" class="fas fa-sign-out-alt" title="Đăng xuất"></div>
+            
+            <div id="menu-btn" class="fas fa-bars"></div>
+        </div>
+    </header>
+
+    <section class="home" id="home">
+        <div class="content">
+            <h3>Hệ thống <span>Mượn trả</span> thiết bị</h3>
+            <p>
+            Nhanh chóng, tiện lợi và chính xác.</p>
+            <a href="#product" class="btn">Xem danh sách thiết bị</a>
+        </div>
+    </section>
+
+    
+</section>
+<!--Danh sách sản phẩm-->
+<section class="product" id="product">
+        <h1 class="heading"> DANH SÁCH <span> THIẾT BỊ </span> </h1>
+     </div>
+        <div class="box-container" id="equipment-list">
+            </div>
+    </section>
+
+<!-- form mượn -->
+   <section class="contact" id="form">
+
+        <h1 class="heading"> ĐIỀN FORM <span> MƯỢN MÁY </span> </h1>
+
+        <div class="row">
+           <div class="image" style="background: #fff; border: 2px dashed var(--primary-color); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; border-radius: 1rem; cursor: pointer;" onclick="document.getElementById('qr-input').click()">
+                
+                <img id="qr-preview" src="" alt="" style="display: none;">
+                
+                <div id="qr-instruction" style="text-align: center;">
+                    <i class="fas fa-qrcode" style="font-size: 5rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                    <h3 style="font-size: 2rem;">Upload ảnh QR</h3>
+                    <p style="font-size: 1.4rem; color: #666;">Nhấn vào đây để tải ảnh QR code<br>Hệ thống sẽ tự điền thông tin thiết bị</p>
+                </div>
+                
+                <input type="file" id="qr-input" accept="image/*" style="display: none;">
+            </div>
+
+            <form action="" id="borrow-form">
+                <h3 style="font-size: 2.5rem; color: var(--black); margin-bottom: 2rem;">Thông tin phiếu mượn</h3>
+
+                <div class="inputBox">
+                    <input type="text" id="device-name" placeholder="Tên thiết bị (Upload QR để tự điền)" readonly
+                        style="width: 25%; background: #eee; cursor: not-allowed;height: 3rem; padding: 0 1rem; border-radius: 0.5rem; border: 1px solid #ccc;"> 
+                <input type="hidden" id="device-id">    
+                </div>
+
+                <div class="inputBox">
+                    <input type="text" id="borrower-name" placeholder="Họ và tên người mượn" required
+                        style="width: 25%; margin: 1rem 0; border-radius: 0.5rem; border: 1px solid #ccc; height: 3rem; padding: 0 1rem;">
+                    <input type="number" id="borrower-phone" placeholder="Số điện thoại liên hệ" required
+                        style="width: 25%; margin: 1rem 0; border-radius: 0.5rem; border: 1px solid #ccc; height: 3rem; padding: 0 1rem;">
+                   
+                </div>
+
+                <div class="inputBox">
+                    <div style="width: 49%; margin: 1rem 0;">
+                        <label style="font-size: 1.4rem; color: #666; display: block; margin-bottom: 0.5rem;">Ngày mượn:</label>
+                        <input type="date" id="borrow-date" style="width: 100%; margin: 0;">
+                    </div>
+                    <div style="width: 49%; margin: 1rem 0;">
+                        <label style="font-size: 1.4rem; color: #666; display: block; margin-bottom: 0.5rem;">Ngày trả dự kiến:</label>
+                        <input type="date" id="return-date" style="width: 100%; margin: 0;">
+                    </div>
+                </div>
+
+                <textarea placeholder="Ghi chú (Ví dụ: Địa điểm, phụ kiện đi kèm,...)" id="note" cols="30" rows="5" style="height: 10rem;"></textarea>
+                
+                <input type="submit" value="Gửi yêu cầu mượn" class="btn" style="width: 20%;">
+            </form>
+
+        </div>
+    </section>
+<!-- form mượn ends -->
+ <!-- lịch sử mượn -->
+  <section class="review" id="history">
+        <h1 class="heading"> Lịch sử <span>Mượn trả</span> </h1>
+
+        <div class="box-container" id="history-list" style="display: block; max-width: 800px; margin: 0 auto;">
+            </div>
+
+    </section>
+<!-- lịch sử mượn ends -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
