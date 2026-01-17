@@ -1,4 +1,4 @@
-// --- BẢO MẬT: Kiểm tra quyền Admin
+//Kiểm tra quyền Admin
 function checkAdmin() {
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || user.role !== 'admin') {
@@ -7,7 +7,7 @@ function checkAdmin() {
     }
 }
 
-// --- 1. Đổ dữ liệu Kho thiết bị (Phần 2) ---
+// 1. Đổ dữ liệu Kho thiết bị
 async function fetchAndRenderEquipment() {
     try {
         const response = await fetch('/api/equipment');
@@ -55,7 +55,7 @@ async function fetchAndRenderEquipment() {
     }
 }
 
-// --- 2. Đổ dữ liệu Đơn mượn vào Bảng (Phần 3) ---
+// --- 2. Đổ dữ liệu Đơn mượn vào Bảng ---
 async function loadRequests() {
     const res = await fetch('/api/admin/requests');
     const data = await res.json();

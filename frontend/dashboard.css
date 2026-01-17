@@ -305,7 +305,7 @@ input[type="date"] {
 }
 
 .status-available { background: var(--primary-color); }
-.status-in_use { background: #dc3545; } /* Màu đỏ */
+.status-in_use { background: #dc3545; } 
 
 
 /* CSS cho thẻ Thiết bị (Equipment Card) */
@@ -330,9 +330,9 @@ input[type="date"] {
 
 /* Ảnh thiết bị chính */
 .product .box-container .box .image img {
-    height: 15rem; /* Cố định chiều cao cho đều */
+    height: 15rem; 
     width: 100%;
-    object-fit: contain; /* Giữ tỷ lệ ảnh không bị méo */
+    object-fit: contain;
     margin-bottom: 1rem;
 }
 
@@ -376,22 +376,13 @@ input[type="date"] {
 }
 
 .status-available { background: var(--primary-color); }
-.status-in_use { background: #dc3545; } /* Màu đỏ */
-/* ... existing code ... */
-
-/* --- CSS MỚI CHO ẢNH PREVIEW QR --- */
+.status-in_use { background: #dc3545; }
 #qr-preview {
     max-width: 90%;
     max-height: 250px; 
-    
-    /* Đảm bảo ảnh không bị méo khi bị ép kích thước */
     object-fit: contain;
-    
-    /* Căn giữa ảnh trong khung */
     margin: 1rem auto;
-    display: block; /* Để margin auto hoạt động */
-    
-    /* Trang trí thêm tí cho đẹp (tùy chọn) */
+    display: block;
     border-radius: .5rem;
     box-shadow: 0 .5rem 1rem rgba(0,0,0,0.1);
 }

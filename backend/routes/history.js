@@ -4,7 +4,6 @@ const router = express.Router();
 
 // GET /api/history
 router.get('/', (req, res) => {
-    // Join 3 bảng để lấy tên User và tên Thiết bị
     const sql = `
         SELECT 
             br.*, 

@@ -1,18 +1,23 @@
 const mysql = require('mysql2');
-const fs = require('fs');
-const path = require('path');
+require('dotenv').config();
 
-// Đọc config từ mysql.json 
-const db_content = fs.readFileSync(path.join(__dirname, '../mysql.json'));
-const db = mysql.createConnection(JSON.parse(db_content));
+const db = mysql.createConnection({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'inventory_db',
+    port: process.env.DB_PORT || 3306,
+    ssl: process.env.DB_HOST ? { rejectUnauthorized: false } : null
+});
 
-// Kết nối database
+console.log(">> Đang thử kết nối tới Database tại:", process.env.DB_HOST || 'localhost');
+
 db.connect((err) => {
-  if (err) {
-    console.error('❌ Lỗi kết nối MySQL:', err);
-    return;
-  }
-  console.log('✅ Đã kết nối MySQL database');
+    if (err) {
+        console.error('❌ Lỗi kết nối MySQL:', err.message);
+        return;
+    }
+    console.log('✅ Kết nối MySQL thành công!');
 });
 
 module.exports = db;

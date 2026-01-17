@@ -1,5 +1,7 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const db = require('./config/db');
 const path = require('path');
 const historyRoutes = require('./routes/history');
 const authRoutes = require('./routes/auth');
@@ -38,8 +40,9 @@ app.get('/user_dashboard.html', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend', 'user_dashboard.html'));
 });
 
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server đang chạy trên port ${PORT}`);
-});
+// backend/server.js
+const PORT = process.env.PORT || 5000; // Thay đổi từ 5000 cố định sang biến môi trường
 
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on port ${PORT}`);
+});

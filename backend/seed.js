@@ -1,112 +1,102 @@
+
 const mysql = require('mysql2');
-const fs = require('fs');
-const path = require('path');
+require('dotenv').config(); 
 
-// 1. Đọc config từ mysql.json
-const db_content = fs.readFileSync(path.join(__dirname, 'mysql.json'));
-const dbConfig = JSON.parse(db_content);
+// 1. Lấy cấu hình từ biến môi trường (Ưu tiên Cloud)
+const dbConfig = {
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'inventory_db',
+    port: process.env.DB_PORT || 3306,
+};
 
-// 2. Kết nối MySQL (Bật multipleStatements để chạy nhiều lệnh 1 lúc)
+console.log('-----------------------------------------');
+console.log('>> ĐANG THỬ SEED DỮ LIỆU VÀO HOST:', dbConfig.host);
+console.log('-----------------------------------------');
+
+// 2. Kết nối (Thêm SSL nếu là Cloud)
 const connection = mysql.createConnection({
-  host: dbConfig.host,
-  user: dbConfig.user,
-  password: dbConfig.password,
-  multipleStatements: true 
+    host: dbConfig.host,
+    user: dbConfig.user,
+    password: dbConfig.password,
+    port: dbConfig.port,
+    multipleStatements: true,
+    ssl: process.env.DB_HOST ? { rejectUnauthorized: false } : null
 });
 
 connection.connect((err) => {
-  if (err) {
-    console.error('❌ Lỗi kết nối:', err);
-    return;
-  }
-  console.log('✅ Đã kết nối MySQL!');
-
-  // 3. Tạo Database & Tables
-  const initSQL = `
-    CREATE DATABASE IF NOT EXISTS ${dbConfig.database};
-    USE ${dbConfig.database};
-
-    CREATE TABLE IF NOT EXISTS users (
-      id INT PRIMARY KEY AUTO_INCREMENT,
-      username VARCHAR(50) UNIQUE NOT NULL,
-      password VARCHAR(255) NOT NULL,
-      email VARCHAR(100),
-      full_name VARCHAR(100),
-      phone VARCHAR(20),
-      role ENUM('admin', 'user') DEFAULT 'user',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS equipment (
-      id INT PRIMARY KEY AUTO_INCREMENT,
-      name VARCHAR(200) NOT NULL,
-      qr_code VARCHAR(100) UNIQUE NOT NULL,
-      image_url VARCHAR(255),
-      description TEXT,
-      status ENUM('available', 'in_use', 'broken') DEFAULT 'available',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS borrow_requests (
-      id INT PRIMARY KEY AUTO_INCREMENT,
-      user_id INT,
-      equipment_id INT,
-      borrower_name VARCHAR(100),
-      borrower_phone VARCHAR(20),
-      borrow_date DATE,
-      return_date DATE,
-      actual_return_date DATE,
-      note TEXT,
-      status ENUM('pending', 'approved', 'rejected', 'returned') DEFAULT 'pending',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id),
-      FOREIGN KEY (equipment_id) REFERENCES equipment(id)
-    );
-  `;
-
-  connection.query(initSQL, (err) => {
     if (err) {
-      console.error('❌ Lỗi tạo bảng:', err);
-      return;
+        console.error('❌ Lỗi kết nối:', err.message);
+        return;
     }
-    console.log('✅ Cấu trúc bảng đã sẵn sàng.');
-    
-    // Gọi hàm nạp dữ liệu
-    seedData(connection);
-  });
+    console.log('✅ Đã kết nối MySQL!');
+
+    // 3. Khởi tạo Database & Tables
+    const initSQL = `
+        USE ${dbConfig.database};
+
+        CREATE TABLE IF NOT EXISTS users (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            username VARCHAR(50) UNIQUE NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            role ENUM('admin', 'user') DEFAULT 'user',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS equipment (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            name VARCHAR(200) NOT NULL,
+            qr_code VARCHAR(100) UNIQUE NOT NULL,
+            image_url VARCHAR(255),
+            status ENUM('available', 'in_use', 'broken') DEFAULT 'available',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS borrow_requests (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            user_id INT,
+            equipment_id INT,
+            borrower_name VARCHAR(100),
+            borrower_phone VARCHAR(20),
+            borrow_date DATE,
+            return_date DATE,
+            note TEXT,
+            status ENUM('pending', 'approved', 'rejected', 'returned') DEFAULT 'pending',
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            FOREIGN KEY (equipment_id) REFERENCES equipment(id)
+        );
+    `;
+
+    connection.query(initSQL, (err) => {
+        if (err) {
+            console.error('❌ Lỗi tạo cấu trúc:', err.message);
+            return;
+        }
+        console.log('✅ Cấu trúc bảng đã sẵn sàng.');
+        seedData(connection);
+    });
 });
 
 function seedData(conn) {
-  console.log('Đang dọn dẹp dữ liệu cũ...');
-
-  // TẮT KHÓA NGOẠI & TRUNCATE (Reset ID về 1) ---
-  const cleanSQL = `
-    SET FOREIGN_KEY_CHECKS = 0;
-    TRUNCATE TABLE borrow_requests;
-    TRUNCATE TABLE equipment;
-    TRUNCATE TABLE users;
-    SET FOREIGN_KEY_CHECKS = 1;
-  `;
-
-  conn.query(cleanSQL, (err) => {
-    if (err) { 
-        console.error(' Vẫn lỗi xóa dữ liệu:', err); 
-        return; 
-    }
-    console.log(' Đã xóa dữ liệu cũ!');
-
-    // --- NẠP DỮ LIỆU MỚI ---
-    
-    // 1. Users
-    const sqlUsers = `
-      INSERT INTO users (username, password, email, full_name, role) VALUES 
-      ('admin', 'admin123', 'admin@inventory.com', 'Admin Quản Trị', 'admin'),
-      ('user1', 'user123', 'user1@inventory.com', 'Người Dùng Test', 'user');
+    console.log('Đang dọn dẹp dữ liệu cũ...');
+    const cleanSQL = `
+        SET FOREIGN_KEY_CHECKS = 0;
+        TRUNCATE TABLE borrow_requests;
+        TRUNCATE TABLE equipment;
+        TRUNCATE TABLE users;
+        SET FOREIGN_KEY_CHECKS = 1;
     `;
 
-    // 2. Equipment
+    conn.query(cleanSQL, (err) => {
+        if (err) return console.error('Lỗi xóa dữ liệu:', err);
+        console.log('✅ Đã dọn dẹp dữ liệu cũ!');
 
-    const sqlEquipment = `
+        const sqlUsers = `INSERT INTO users (username, password, role) VALUES 
+            ('admin', 'admin123', 'admin'),
+            ('user1', 'user123', 'user');`;
+
+        const sqlEquipment = `
       INSERT INTO equipment (name, qr_code, image_url, status) VALUES 
       ('Ổ cắm nối dài', 'POWER001', 'image/ổ cắm nối dài.jpg', 'in_use'),
       ('Ổ cắm nối dài', 'POWER002', 'image/ổ cắm nối dài.jpg', 'available'),
@@ -127,23 +117,19 @@ function seedData(conn) {
       ('Microphone Blue Yeti', 'MICBLUE001', 'image/microphone blue yeti.jpg', 'available');
     `;
 
-    conn.query(sqlUsers, (err) => {
-        if(err) console.error('Lỗi tạo user:', err);
-        else console.log('Seed Users OK');
-        
-        conn.query(sqlEquipment, (err) => {
-            if(err) console.error('Lỗi tạo thiết bị:', err);
+        conn.query(sqlUsers, (err) => {
+            if (err) console.error('Lỗi tạo user:', err);
             else {
-                console.log('Seed Equipment OK');
-  
-                console.log('Hoàn tất quá trình seed dữ liệu!');
-                // Đóng kết nối sau 1 giây
-                setTimeout(() => {
-                    conn.end();
-                    process.exit();
-                }, 1000);
+                console.log('✅ Seed Users OK');
+                conn.query(sqlEquipment, (err) => {
+                    if (err) console.error('Lỗi tạo thiết bị:', err);
+                    else {
+                        console.log('✅ Seed Equipment OK');
+                        console.log('🚀 HOÀN TẤT! DỮ LIỆU ĐÃ LÊN CLOUD.');
+                        setTimeout(() => { conn.end(); process.exit(); }, 1000);
+                    }
+                });
             }
         });
     });
-  });
 }

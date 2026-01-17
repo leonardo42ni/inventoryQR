@@ -2,7 +2,7 @@ const express = require('express');
 const db = require('../config/db');
 const router = express.Router();
 
-// API: Lấy tất cả danh sách đơn mượn (để hiện lên bảng)
+// API: Lấy tất cả danh sách đơn mượn
 // GET /api/admin/requests
 router.get('/requests', (req, res) => {
     const sql = `
@@ -27,7 +27,6 @@ router.put('/update', (req, res) => {
     let sqlEquipment = '';
     let message = '';
 
-    // Logic xử lý từng nút bấm
     switch (action) {
         case 'approve': // DUYỆT
             sqlRequest = "UPDATE borrow_requests SET status = 'approved' WHERE id = ?";
@@ -50,14 +49,14 @@ router.put('/update', (req, res) => {
         default:
             return res.status(400).json({ message: 'Hành động không hợp lệ' });
     }
-    // 1. Cập nhật bảng Đơn mượn trước
+    // Cập nhật bảng Đơn mượn trước
     db.query(sqlRequest, [id], (err, result) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ message: 'Lỗi cập nhật đơn hàng' });
         }
 
-        // 2. Nếu cần cập nhật bảng Thiết bị (trường hợp Reject hoặc Return)
+        // Nếu cần cập nhật bảng Thiết bị (trường hợp Reject hoặc Return)
         if (sqlEquipment) {
             db.query(sqlEquipment, [equipment_id], (err) => {
                 if (err) console.error('Lỗi update thiết bị:', err);
@@ -90,7 +89,7 @@ const month = req.query.month || new Date().getMonth() + 1;
             return res.status(500).json({ error: "Lỗi database" });
         }
 
-        res.json(results); // Trả về mảng dữ liệu cho Frontend
+        res.json(results); 
     });
 });
 module.exports = router;
