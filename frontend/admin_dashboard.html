@@ -40,6 +40,7 @@
             <a href="#home">Trang chủ</a>
             <a href="#product">Thiết bị</a>
             <a href="#admin-request">Quản lý đơn</a>
+            <a href="#statistics">Thống kê</a>
         </nav>
         <div class="icons">
             <div id="logout-btn" class="fas fa-sign-out-alt" onclick="logout()" title="Đăng xuất"></div>
@@ -79,7 +80,36 @@
             </table>
         </div>
     </section>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<section class="contact" id="statistics">
+    <h1 class="heading"> THỐNG KÊ <span> HỆ THỐNG </span> </h1>
+    <div class="row" style="background: #fff; padding: 2rem; border-radius: 1rem; box-shadow: var(--box-shadow);">
+        <select id="monthSelect" onchange="loadStatistics()" style="padding: .5rem 1rem; font-size: 1.4rem; margin-right: 1rem;">
+            <option value="">Chọn tháng</option>
+            <option value="1">Tháng 1</option>
+            <option value="2">Tháng 2</option>
+            <option value="3">Tháng 3</option>
+            <option value="4">Tháng 4</option>
+            <option value="5">Tháng 5</option>
+            <option value="6">Tháng 6</option>
+            <option value="7">Tháng 7</option>
+            <option value="8">Tháng 8</option>
+            <option value="9">Tháng 9</option>
+            <option value="10">Tháng 10</option>
+            <option value="11">Tháng 11</option>
+            <option value="12">Tháng 12</option>
+        </select>
+        <select id="yearSelect" onchange="loadStatistics()" style="padding: .5rem 1rem; font-size: 1.4rem;">
+            <option value="">Chọn năm</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+        </select>
+        <div style="width: 100%; max-height: 400px; display: flex; justify-content: center;">
+            <canvas id="statsChart"></canvas>
+        </div>
+    </div>
+</section>
     <script>
         // --- 1. Load danh sách thiết bị (Phần 2) ---
         async function loadEquipment() {
@@ -131,9 +161,54 @@ async function loadRequests() {
         </tr>
     `).join('');
 }
+// ---3. Thống kê đơn mượn ---
+let statsChart; // Biến toàn cục để lưu biểu đồ
+        async function loadStatistics() {
+            const month = document.getElementById('monthSelect').value;
+            const year = document.getElementById('yearSelect').value;
 
-        // --- 3. Gửi lệnh cập nhật lên Backend (Kết nối với admin.js) ---
-        async function updateStatus(id, action, equipment_id) {
+            let url = '/api/admin/statistics';
+            const params = new URLSearchParams();
+            if (month) params.append('month', month);
+            if (year) params.append('year', year);
+            if ([...params].length) url += `?${params.toString()}`;
+
+            const res = await fetch(url);
+            const data = await res.json();
+        const labels = data.map(item => item.name); // Lấy danh sách tên thiết bị
+        const counts = data.map(item => item.count); // Lấy danh sách số lượng mượn
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            if (statsChart) statsChart.destroy(); // Hủy biểu đồ cũ nếu có
+
+            statsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Số lượt mượn',
+                        data: counts,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0,
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+loadStatistics(); // Gọi hàm load thống kê khi trang được tải
+        // --- 4. Gửi lệnh cập nhật lên Backend (Kết nối với admin.js) ---
+     async function updateStatus(id, action, equipment_id) {
             if(!confirm(`Bạn chắc chắn muốn thực hiện hành động: ${action}?`)) return;
 
             const res = await fetch('/api/admin/update', {
@@ -167,6 +242,7 @@ async function loadRequests() {
             navbar.classList.toggle('active');
         }
     </script>
+
     <script src="admin_script.js"></script>
 </body>
 </html>

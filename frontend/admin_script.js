@@ -1,4 +1,4 @@
-// --- BẢO MẬT: Kiểm tra quyền Admin ngay khi vào trang ---
+// --- BẢO MẬT: Kiểm tra quyền Admin
 function checkAdmin() {
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || user.role !== 'admin') {
@@ -13,7 +13,7 @@ async function fetchAndRenderEquipment() {
         const response = await fetch('/api/equipment');
         const data = await response.json();
         
-        currentEquipmentList = data; // Lưu lại để dùng check QR
+        currentEquipmentList = data; 
 
         const list = document.getElementById('equipment-list');
         if(!list) return;
@@ -100,8 +100,6 @@ async function updateStatus(id, action, equipment_id) {
 
         const result = await res.json();
         alert(result.message);
-        
-        // Load lại cả 2 phần để cập nhật trạng thái mới nhất
         loadRequests();
         loadEquipment();
     } catch (err) {
@@ -109,7 +107,7 @@ async function updateStatus(id, action, equipment_id) {
         alert('Có lỗi xảy ra, vui lòng thử lại!');
     }
 }
-
+      
 // --- Đăng xuất ---
 function logout() {
     localStorage.removeItem('user');
@@ -121,8 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAdmin();
     loadEquipment();
     loadRequests();
-    
-    // Xử lý menu mobile giống bản User
+    // Xử lý menu mobile
     let menu = document.querySelector('#menu-btn');
     let navbar = document.querySelector('.navbar');
     if(menu) {

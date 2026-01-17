@@ -121,7 +121,7 @@ section{
 .home .content{
   max-width: 60rem;
   text-align: center;
-  position: relative; /* Để nổi lên trên lớp phủ */
+  position: relative; 
   z-index: 1;
 }
 
@@ -174,11 +174,10 @@ section{
 }
 /* CSS bổ sung cho phần Upload QR */
 .contact .row .image:hover {
-    background: #f0fff0 !important; /* Đổi màu nền nhẹ khi di chuột vào */
+    background: #f0fff0 !important; 
     transition: 0.3s;
 }
-
-/* Chỉnh lại date input cho đẹp */
+/* CSS cho thẻ input date */
 input[type="date"] {
     padding: 1rem;
     font-size: 1.6rem;
@@ -210,7 +209,7 @@ input[type="date"] {
 
 /* Thông tin giữa */
 .history-card .info {
-    flex: 1; /* Chiếm hết khoảng trống ở giữa */
+    flex: 1;
 }
 
 .history-card .info h3 {
@@ -255,14 +254,14 @@ input[type="date"] {
 }
 
 .product .box-container .box:hover {
-    transform: translateY(-5px); /* Hiệu ứng nổi lên khi di chuột */
+    transform: translateY(-5px); 
 }
 
 /* Ảnh thiết bị chính */
 .product .box-container .box .image img {
-    height: 15rem; /* Cố định chiều cao cho đều */
+    height: 15rem; 
     width: 100%;
-    object-fit: contain; /* Giữ tỷ lệ ảnh không bị méo */
+    object-fit: contain; 
     margin-bottom: 1rem;
 }
 
@@ -326,7 +325,7 @@ input[type="date"] {
     gap: 1.5rem;
 }
 .product .box-container .box:hover {
-    transform: translateY(-5px); /* Hiệu ứng nổi lên khi di chuột */
+    transform: translateY(-5px); 
 }
 
 /* Ảnh thiết bị chính */
@@ -382,11 +381,7 @@ input[type="date"] {
 
 /* --- CSS MỚI CHO ẢNH PREVIEW QR --- */
 #qr-preview {
-    /* Giới hạn chiều ngang: chỉ chiếm 90% khung chứa để không bị sát lề */
     max-width: 90%;
-    
-    /* GIỚI HẠN CHIỀU CAO QUAN TRỌNG NHẤT */
-    /* Bro có thể tăng giảm số 250px này tùy ý thích */
     max-height: 250px; 
     
     /* Đảm bảo ảnh không bị méo khi bị ép kích thước */

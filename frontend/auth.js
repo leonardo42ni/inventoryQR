@@ -46,7 +46,6 @@ loginButton.addEventListener('click', async () => {
       
       // Lưu thông tin user vào localStorage
       localStorage.setItem('user', JSON.stringify(data.user));
-      
       // Chuyển trang dựa vào role
       if (data.user.role === 'admin') {
         window.location.href = '/admin_dashboard.html';
@@ -113,8 +112,7 @@ registerButton.addEventListener('click', async () => {
     alert('Không thể kết nối tới server!');
   }
 });
-
-// Cho phép Enter để submit
+// Bắt sự kiện nhấn Enter để đăng nhập/đăng ký
 document.getElementById('loginPassword').addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
     loginButton.click();

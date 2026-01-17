@@ -2,7 +2,7 @@ const mysql = require('mysql2');
 const fs = require('fs');
 const path = require('path');
 
-// Đọc config từ mysql.json (giống code cũ của bạn)
+// Đọc config từ mysql.json 
 const db_content = fs.readFileSync(path.join(__dirname, '../mysql.json'));
 const db = mysql.createConnection(JSON.parse(db_content));
 

@@ -1,5 +1,5 @@
 const express = require('express');
-const db = require('../config/db'); // Nhớ check đường dẫn này có đúng trỏ về db.js ko nhé
+const db = require('../config/db'); 
 
 const router = express.Router();
 

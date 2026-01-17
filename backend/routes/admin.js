@@ -22,9 +22,6 @@ router.get('/requests', (req, res) => {
 // PUT /api/admin/update
 router.put('/update', (req, res) => {
     const { id, action, equipment_id } = req.body; 
-    // id: ID đơn mượn
-    // action: 'approve', 'reject', 'return'
-    // equipment_id: ID thiết bị (để đổi trạng thái máy)
 
     let sqlRequest = '';
     let sqlEquipment = '';
@@ -33,24 +30,18 @@ router.put('/update', (req, res) => {
     // Logic xử lý từng nút bấm
     switch (action) {
         case 'approve': // DUYỆT
-            // Chỉ đổi trạng thái đơn thành approved. 
-            // Máy vẫn giữ là 'in_use' (vì User bắt đầu dùng).
             sqlRequest = "UPDATE borrow_requests SET status = 'approved' WHERE id = ?";
-            sqlEquipment = null; // Không cần chỉnh sửa thiết bị
+            sqlEquipment = null; 
             message = 'Đã duyệt đơn thành công!';
             break;
 
         case 'reject': // TỪ CHỐI
-            // Đơn thành rejected
-            // Máy phải nhả ra thành 'available'
             sqlRequest = "UPDATE borrow_requests SET status = 'rejected' WHERE id = ?";
             sqlEquipment = "UPDATE equipment SET status = 'available' WHERE id = ?";
             message = 'Đã từ chối đơn mượn.';
             break;
 
-        case 'return': // ĐÃ TRẢ
-            // Đơn thành returned + Cập nhật ngày trả thực tế là hôm nay (NOW())
-            // Máy phải nhả ra thành 'available'
+        case 'return': // ĐÃ TRẢ'
             sqlRequest = "UPDATE borrow_requests SET status = 'returned', actual_return_date = CURDATE() WHERE id = ?";
             sqlEquipment = "UPDATE equipment SET status = 'available' WHERE id = ?";
             message = 'Xác nhận trả thiết bị thành công!';
@@ -59,9 +50,6 @@ router.put('/update', (req, res) => {
         default:
             return res.status(400).json({ message: 'Hành động không hợp lệ' });
     }
-
-    // --- BẮT ĐẦU CHẠY SQL ---
-    
     // 1. Cập nhật bảng Đơn mượn trước
     db.query(sqlRequest, [id], (err, result) => {
         if (err) {
@@ -73,15 +61,36 @@ router.put('/update', (req, res) => {
         if (sqlEquipment) {
             db.query(sqlEquipment, [equipment_id], (err) => {
                 if (err) console.error('Lỗi update thiết bị:', err);
-                // Dù lỗi update thiết bị hay không thì vẫn báo thành công cho Admin đỡ hoang mang
-                // (Thực tế nên dùng Transaction, nhưng học tập thì thế này là ổn)
                 res.json({ message: message });
             });
         } else {
-            // Trường hợp Approve không cần sửa thiết bị
             res.json({ message: message });
         }
     });
 });
+// API: Thống kê số lượt mượn theo thiết bị
+router.get('/statistics', (req, res) => {
+const month = req.query.month || new Date().getMonth() + 1;
+    const year = req.query.year || new Date().getFullYear();
+    const filters = [];
 
+    const sql = `
+        SELECT e.name, COUNT(br.id) AS count 
+        FROM borrow_requests br
+        JOIN equipment e ON br.equipment_id = e.id
+        WHERE br.status IN ('approved', 'returned')
+        AND MONTH(br.borrow_date) = ?
+        AND YEAR(br.borrow_date) = ?
+        GROUP BY e.id
+    `;
+
+    db.query(sql, [month, year], (err, results) => {
+        if (err) {
+            console.error("Lỗi SQL Thống kê:", err);
+            return res.status(500).json({ error: "Lỗi database" });
+        }
+
+        res.json(results); // Trả về mảng dữ liệu cho Frontend
+    });
+});
 module.exports = router;
