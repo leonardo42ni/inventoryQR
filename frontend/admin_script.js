@@ -58,10 +58,17 @@ async function fetchAndRenderEquipment() {
 // --- 2. Đổ dữ liệu Đơn mượn vào Bảng ---
 async function loadRequests() {
     const res = await fetch('/api/admin/requests');
-    const data = await res.json();
-    const tbody = document.getElementById('request-tbody');
-    
-    tbody.innerHTML = data.map(req => `
+        const data = await res.json();
+
+        // CHỐT CHẶN: Nếu không phải mảng (do lỗi 500 trả về object lỗi) thì dừng lại
+        if (!Array.isArray(data)) {
+            console.error("Dữ liệu nhận được không phải mảng:", data);
+            document.getElementById('request-list').innerHTML = '<tr><td colspan="7">Lỗi tải dữ liệu từ máy chủ.</td></tr>';
+            return;
+        }
+
+        const container = document.getElementById('request-list');
+        container.innerHTML = data.map(req => `
         <tr>
             <td>
                 <b>${req.borrower_name || req.username}</b><br>

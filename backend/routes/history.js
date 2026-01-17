@@ -2,24 +2,34 @@ const express = require('express');
 const db = require('../config/db');
 const router = express.Router();
 
-// GET /api/history
-router.get('/', (req, res) => {
+// PHẢI CÓ :userId Ở ĐÂY
+router.get('/:userId', (req, res) => {
+    const userId = req.params.userId;
+    
+    // Câu lệnh SQL cực kỳ tường minh (Explicit) để tránh lỗi Ambiguous
     const sql = `
         SELECT 
-            br.*, 
-            u.username, 
-            e.name as device_name, 
+            br.id, 
+            br.borrower_name, 
+            br.borrow_date, 
+            br.status,
+            e.name AS device_name, 
             e.image_url 
         FROM borrow_requests br
-        JOIN users u ON br.user_id = u.id
-        JOIN equipment e ON br.equipment_id = e.id
+        INNER JOIN equipment e ON br.equipment_id = e.id
+        WHERE br.user_id = ?
         ORDER BY br.created_at DESC
     `;
-    
-    db.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ message: 'Lỗi server' });
+
+    db.query(sql, [userId], (err, results) => {
+        if (err) {
+            // NHÌN VÀO ĐÂY: Nó sẽ hiện lỗi ở Terminal máy ông (VS Code)
+            console.log("---------- LỖI SQL Ở ĐÂY ----------");
+            console.error(err); 
+            console.log("----------------------------------");
+            return res.status(500).json({ error: err.message });
+        }
         res.json(results);
     });
 });
-
 module.exports = router;

@@ -6,18 +6,23 @@ const router = express.Router();
 // GET /api/admin/requests
 router.get('/requests', (req, res) => {
     const sql = `
-        SELECT br.*, u.username, e.name as device_name, e.image_url 
+        SELECT 
+            br.id, br.borrower_name, br.borrow_date, br.status,
+            u.username, 
+            e.name AS device_name
         FROM borrow_requests br
         JOIN users u ON br.user_id = u.id
         JOIN equipment e ON br.equipment_id = e.id
-        ORDER BY br.created_at DESC
+        ORDER BY br.id DESC
     `;
     db.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ message: 'Lỗi lấy danh sách đơn' });
+        if (err) {
+            console.error("❌ Lỗi SQL Admin:", err.message);
+            return res.status(500).json({ error: err.message });
+        }
         res.json(results);
     });
 });
-
 // API: Xử lý hành động (Duyệt / Từ chối / Trả)
 // PUT /api/admin/update
 router.put('/update', (req, res) => {

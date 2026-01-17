@@ -100,7 +100,13 @@ async function fetchAndRenderEquipment() {
 // B. Tải lịch sử mượn
 async function fetchAndRenderHistory() {
     try {
-        const response = await fetch('/api/history');
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || !user.id) return;
+
+        // SỬA DÒNG NÀY: Thêm user.id vào cuối
+        const response = await fetch(`/api/history/${user.id}`); 
+        
+        if (!response.ok) throw new Error('Mã lỗi: ' + response.status);
         const data = await response.json();
        
         const list = document.getElementById('history-list');
