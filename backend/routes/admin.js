@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/requests', (req, res) => {
     const sql = `
         SELECT 
-            br.id, br.borrower_name, br.borrow_date, br.status,
+            br.id, br.borrower_name, br.borrow_date, br.status, br.return_date, br.note, br.equipment_id, br.borrower_phone,
             u.username, 
             e.name AS device_name
         FROM borrow_requests br
@@ -16,10 +16,7 @@ router.get('/requests', (req, res) => {
         ORDER BY br.id DESC
     `;
     db.query(sql, (err, results) => {
-        if (err) {
-            console.error("❌ Lỗi SQL Admin:", err.message);
-            return res.status(500).json({ error: err.message });
-        }
+        if (err) return res.status(500).json({ error: err.message });
         res.json(results);
     });
 });
@@ -54,14 +51,11 @@ router.put('/update', (req, res) => {
         default:
             return res.status(400).json({ message: 'Hành động không hợp lệ' });
     }
-    // Cập nhật bảng Đơn mượn trước
     db.query(sqlRequest, [id], (err, result) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ message: 'Lỗi cập nhật đơn hàng' });
         }
-
-        // Nếu cần cập nhật bảng Thiết bị (trường hợp Reject hoặc Return)
         if (sqlEquipment) {
             db.query(sqlEquipment, [equipment_id], (err) => {
                 if (err) console.error('Lỗi update thiết bị:', err);

@@ -102,22 +102,16 @@ async function fetchAndRenderHistory() {
     try {
         const user = JSON.parse(localStorage.getItem('user'));
         if (!user || !user.id) return;
-
-        // SỬA DÒNG NÀY: Thêm user.id vào cuối
         const response = await fetch(`/api/history/${user.id}`); 
-        
         if (!response.ok) throw new Error('Mã lỗi: ' + response.status);
         const data = await response.json();
-       
         const list = document.getElementById('history-list');
         if(!list) return;
         list.innerHTML = '';
-
         if(data.length === 0) {
             list.innerHTML = '<p style="text-align:center; font-size:1.4rem">Chưa có lịch sử mượn nào.</p>';
             return;
         }
-
         data.forEach(item => {
             let statusText = '', statusClass = '';
             switch(item.status) {
@@ -154,12 +148,7 @@ async function fetchAndRenderHistory() {
 // Gọi hàm chạy ngay khi vào trang
 fetchAndRenderEquipment();
 fetchAndRenderHistory();
-
-
-/* =========================================
-   PHẦN 3: XỬ LÝ QUÉT QR CODE (AUTO FILL)
-   ========================================= */
-
+/* PHẦN 3: XỬ LÝ QR CODE*/
 const fileInput = document.getElementById('qr-input');
 const previewImg = document.getElementById('qr-preview');
 const instruction = document.getElementById('qr-instruction');
@@ -210,16 +199,13 @@ function scanQRCode(imageSrc) {
 }
 
 function handleQRFound(qrCodeText) {
-    // SỬA QUAN TRỌNG: Tìm trong currentEquipmentList (dữ liệu thật) thay vì mockEquipment
     const device = currentEquipmentList.find(item => item.qr_code === qrCodeText);
-
     if (device) {
         if (device.status === 'in_use' || device.status === 'broken') {
             alert(`⛔ THIẾT BỊ BẬN: "${device.name}" đang có người mượn.`);
             resetFormQR();
             return;
         }
-
         alert(`✅ Đã nhận diện: ${device.name}`);
         document.getElementById('device-name').value = device.name;
         document.getElementById('device-id').value = device.id;
@@ -239,15 +225,13 @@ function resetFormQR() {
 }
 
 
-/* =========================================
-   PHẦN 4: GỬI ĐƠN MƯỢN (SUBMIT FORM)
-   ========================================= */
+/* PHẦN 4: GỬI ĐƠN MƯỢN (SUBMIT FORM) */
 
 const borrowForm = document.getElementById('borrow-form');
 
 if(borrowForm) {
     borrowForm.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Chặn load lại trang
+        e.preventDefault();
 
         const user = JSON.parse(localStorage.getItem('user'));
         const equipmentId = document.getElementById('device-id').value;
@@ -256,8 +240,6 @@ if(borrowForm) {
         const borrowDate = document.getElementById('borrow-date').value;
         const returnDate = document.getElementById('return-date').value;
         const note = document.getElementById('note').value;
-
-        // Validate
         if (!equipmentId) {
             alert('⚠️ Vui lòng upload ảnh QR để chọn thiết bị trước!');
             return;
@@ -284,7 +266,7 @@ if(borrowForm) {
 
             if (response.ok) {
                 alert('🎉 ' + result.message);
-                window.location.reload(); // Load lại để cập nhật trạng thái
+                window.location.reload(); 
             } else {
                 alert('❌ Lỗi: ' + result.message);
             }

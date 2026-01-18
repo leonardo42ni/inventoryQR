@@ -6,7 +6,12 @@ function checkAdmin() {
         window.location.href = '/index.html';
     }
 }
-
+function formatDate(dateString) {
+    if (!dateString || dateString === '0000-00-00') return "Chưa có";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Sai định dạng";
+    return date.toLocaleDateString('vi-VN');
+}
 // 1. Đổ dữ liệu Kho thiết bị
 async function fetchAndRenderEquipment() {
     try {
@@ -59,14 +64,11 @@ async function fetchAndRenderEquipment() {
 async function loadRequests() {
     const res = await fetch('/api/admin/requests');
         const data = await res.json();
-
-        // CHỐT CHẶN: Nếu không phải mảng (do lỗi 500 trả về object lỗi) thì dừng lại
         if (!Array.isArray(data)) {
             console.error("Dữ liệu nhận được không phải mảng:", data);
             document.getElementById('request-list').innerHTML = '<tr><td colspan="7">Lỗi tải dữ liệu từ máy chủ.</td></tr>';
             return;
         }
-
         const container = document.getElementById('request-list');
         container.innerHTML = data.map(req => `
         <tr>
@@ -94,7 +96,7 @@ async function loadRequests() {
     `).join('');
 }
 
-// --- 3. Xử lý sự kiện Click nút (Gọi đến backend/routes/admin.js) ---
+// --- 3. Xử lý sự kiện Click nút ---
 async function updateStatus(id, action, equipment_id) {
     if(!confirm(`Xác nhận thực hiện hành động: ${action}?`)) return;
 

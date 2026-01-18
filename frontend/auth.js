@@ -43,10 +43,7 @@ loginButton.addEventListener('click', async () => {
 
     if (response.ok) {
       alert('Đăng nhập thành công!');
-      
-      // Lưu thông tin user vào localStorage
       localStorage.setItem('user', JSON.stringify(data.user));
-      // Chuyển trang dựa vào role
       if (data.user.role === 'admin') {
         window.location.href = '/admin_dashboard.html';
       } else {
@@ -95,8 +92,6 @@ registerButton.addEventListener('click', async () => {
 
     if (response.ok) {
       alert('Đăng ký thành công! Bạn có thể đăng nhập ngay.');
-      
-      // Chuyển về form đăng nhập
       showLoginBtn.click();
       
       // Xóa các input
